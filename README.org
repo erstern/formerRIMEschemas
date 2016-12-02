@@ -1,5 +1,8 @@
 ** Used RIME schemas
+*** cangjie
+*** double
 *** dshung
 *** wubi98
 *** zhlan
+*** zhung_transcript
 *** easy_en
