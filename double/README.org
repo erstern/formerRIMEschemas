@@ -1,0 +1,5 @@
+* 自然碼雙拼方案
+Mixed double_pinyin and cangjie in one schema, modeled on
+[[https://github.com/lotem/brise/blob/master/supplement/double_pinyin.schema.yaml][double_pinyin]] .
+
+自然碼雙拼，使用倉頡反查。根據 [[https://github.com/lotem/brise/blob/master/supplement/double_pinyin.schema.yaml][自然碼雙拼]] 製作。
