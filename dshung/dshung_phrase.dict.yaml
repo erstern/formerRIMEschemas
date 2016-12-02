@@ -1,0 +1,86 @@
+# Rime dictionary
+# encoding: utf-8
+#
+# dshung - 中原官話
+#
+#   謝元辰 <yuanchen.gm@gmail.com>
+#
+#   採用《柳絮拼音中原官話》拼音方案
+#
+
+---
+name: dshung_phrase
+version: "2014.11.18"
+sort: by_weight
+use_preset_vocabulary: true
+...
+
+
+# 詞組和短語
+
+清早	tsio1
+一早兒	yi1 dsaul3
+不應	bing2
+不應	bu1 ying4
+不用	bing1
+不用	bu1 yung4
+不要	bau2
+不要	bu1 yau4
+只當	dsih3 dang4
+起來	tjai3
+起來	tji3 lai2
+出來	tchuai1
+出來	tchuai2
+出來	tchu1 lai2
+知道	dsho1
+知道	dsho2
+知道	dshih1 dau4
+裏頭	liou3
+裏頭	li3 tou2
+底下	dia3
+底下	di3 hsa4
+頂上	diang3
+頂上	ding3 shang4
+地下	dia4
+地下	di4 hsa4
+人家	rheh2
+人家	nia3
+人家	rhen2 jeh1
+一個	yuo2
+一個	yi1 ge4
+兩個	lia3
+兩個	liang3 ge4
+三個	sa1
+三個	san1 ge4
+四個	siho4
+四個	sy4 ge4
+五個	wuo2
+五個	wu3 ge4
+六個	liou4 wo4
+六個	liou4 ge4
+七個	cie2
+七個	ci1 ge4
+八個	ba2 wo4
+八個	ba1 ge4
+九個	djiou3 wo4
+九個	djiou3 ge4
+十個	shiho2
+十個	sho2
+十個	shy2 ge4
+百十個	beh1 sho2
+幾個	jeh3
+幾個	ji3 ge4
+幾十個	ji3 sho2
+這個	dsho4
+這個	dshe4 ge4
+那個	no4
+那個	na4 ge4
+哪個	no3
+哪個	na3 ge4
+做啥	dsua2
+弄啥	nua2
+弄啥	nung4 sha4
+時候	shoul2
+時候	shy2 hou4
+生日	shoul1
+生日	sheng rhy1

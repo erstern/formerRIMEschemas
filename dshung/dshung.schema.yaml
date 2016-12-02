@@ -1,0 +1,254 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: dshung
+  name: 柳絮拼音中原官話
+  version: "2015.01.06"
+  author:
+    - 謝元辰 <yuanchen.gm@gmail.com>
+  description: |
+    鄭州地區中原官話，樹式拼音拼寫法。
+    倉頡五代編碼反查，亦作爲擴展詞庫，音形混合輸入。
+  dependencies:
+    - dshung
+    - cangjie5
+
+switches:
+  - name: ascii_mode
+    reset: 0
+  - name: full_shape
+  - name: simplification
+    reset: 0
+    states: [ 漢字, 汉字 ]
+  - name: extended_charset
+    states: [ 通用, 增廣 ]
+
+engine: 	# 輸入引擎設定，即掛接組件的「處方」
+  processors: 	# 一、這批組件處理各類按鍵消息
+    - ascii_composer	# 處理西文模式及中西文切換
+    - recognizer	# 與 matcher 搭配，處理符合特定規則的輸入碼，如網址、反查等
+    - key_binder	# 在特定條件下將按鍵綁定到其他按鍵，如重定義逗號、句號爲候選翻頁鍵
+    - speller	# 拼寫處理器，接受字符按鍵，編輯輸入碼
+    - punctuator	# 句讀處理器，將單個字符按鍵直接映射爲文字符號
+    - selector	# 選字處理器，處理數字選字鍵、上、下候選定位、換頁鍵
+    - navigator	# 處理輸入欄內的光標移動鍵
+    - express_editor	# 編輯器，處理空格、回車上屏、回退鍵等
+  segmentors: 	# 二、這批組件識別不同內容類型，將輸入碼分段
+    - ascii_segmentor	# 標識西文段落
+    - matcher	# 標識符合特定規則的段落，如網址、反查等
+    - affix_segmentor@reverse_lookup
+    - abc_segmentor	# 標識常規的文字段落
+    - punct_segmentor	# 標識句讀段落
+    - fallback_segmentor	# 標識其他未標識段落
+  translators: 	# 三、這批組件翻譯特定類型的編碼段爲一組候選文字
+#    - echo_translator	# 沒有其他候選字時，回顯輸入碼
+    - punct_translator	# 轉換標點符號
+    - script_translator	# 腳本翻譯器，用於拼音等基於音節表的輸入方案
+    - table_translator@reverse_lookup
+    - reverse_lookup_translator	# 反查翻譯器，用另一種編碼方案查碼
+  filters: 	# 四、這批組件過濾翻譯的結果
+    - simplifier	# 繁簡轉換
+    - uniquifier	# 過濾重複的候選字，有可能來自繁簡轉換
+    - reverse_lookup_filter@cangjie5_reverse_lookup
+    - reverse_lookup_filter@translator
+
+#    - fluency_editor    # ※ 句式編輯器，用於以空格斷詞、回車上屏的【注音】、【語句流】等輸入方案，替換 express_editor
+#    - chord_composer    # ※ 和絃作曲家或曰並擊處理器，用於【宮保拼音】等多鍵並擊的輸入方案
+#    - table_translator  # ※ 碼表翻譯器，用於倉頡、五筆等基於碼表的輸入方案，替換 script_translator
+
+speller:
+  alphabet: 'zyxwvutsrqponmlkjihgfedcba:;<,/\'
+  initials: zyxwvutsrqponmlkjihgfedcba
+  delimiter: " '"
+  algebra:
+    - derive/^wu(.+)$/we$1/
+#    - derive/^w/v/
+    - abbrev/^([a-z]).+$/$1/
+    - abbrev/^([zcs]h).+$/$1/
+    - abbrev/^([dth]s).+$/$1/
+    - abbrev/^(dsh).+$/$1/
+    - abbrev/^([t]?ch).+$/$1/
+    - derive/^rh/r/
+    - derive/^dj/j/
+    - derive/^tch/ch/
+#    - derive/^([jqx])([aeou])/$1i$2/
+    - derive/^([dt]?j)([aeou]h?)/$1i$2/
+    - derive/^([dt]?j)i([aeou]h?)/$1$2/
+    - derive/^([dt]?j)y(u)/$1$2/
+    - derive/^(hs)([aeou]h?)/$1i$2/
+    - derive/^(hs)i([aeou]h?)/$1$2/
+    - derive/^(hs)y(u)/$1$2/
+    - derive/^(ds)(h?)/z$2/
+    - derive/^ts/c/
+    - derive/^tj/q/
+    - derive/^hs/x/
+#    - derive/^yu/iu/
+    - derive/ui/uei/
+    - derive/un/uen/
+#    - derive/eo(\d?)$/oe$1/
+    - derive/([aeiou])ng(\d?)$/$1gn$2/
+    - derive/([iu])a(l|ng?)(\d?)$/a$1$2$3/
+    - derive/^ds(h?)([a-z]+)(\d?)$/sd$1$2$3/
+    - derive/^([a-z]+)\d$/$1/
+    - 'xlit 1234 -/<\'
+    - 'derive/^(.*)-$/$1;/'
+    - 'derive/^(.*)<$/$1,/'
+
+translator:
+  tags: [ abc ]
+  dictionary: dshung
+  #spelling_hints: 4
+  overwrite_comment: true
+  preedit_format:
+    - 'xform ([aeiou])(l|ng?)([-;<,/\\]) $1$3$2'
+    - 'xform ([aeo])([iu])([-;<,/\\]) $1$3$2'
+    - 'xform a[-;] ā'
+    - 'xform a[<,] â'
+    - 'xform a/ á'
+    - 'xform a\\ à'
+    - 'xform e[-;] ē'
+    - 'xform e[<,] ê'
+    - 'xform e/ é'
+    - 'xform e\\ è'
+    - 'xform eh[-;] ēh'
+    - 'xform eh[<,] êh'
+    - 'xform eh/ éh'
+    - 'xform eh\\ èh'
+    - 'xform o[-;] ō'
+    - 'xform o[<,] ô'
+    - 'xform o/ ó'
+    - 'xform o\\ ò'
+    - 'xform i[-;] ī'
+    - 'xform i[<,] î'
+    - 'xform i/ í'
+    - 'xform i\\ ì'
+    - 'xform ih[-;] īh'
+    - 'xform ih[<,] îh'
+    - 'xform ih/ íh'
+    - 'xform ih\\ ìh'
+    - 'xform r([^h])([a-z]+)? rh$1$2'
+    - 'xform ([^dt])j $1dj'
+    - 'xform ^j dj'
+    - 'xform z ds'
+    - 'xform ([^t])ch $1tch'
+    - 'xform ^ch tch'
+    - 'xform c([^h])([a-z]+)? ts$1$2'
+    - 'xform q tj'
+    - 'xform x hs'
+#    - 'xform iu[-;] ǖ'
+#    - 'xform iu/ ǘ'
+#    - 'xform iu[<,] ǚ'
+#    - 'xform iu\\ ǜ'
+#    - 'xform iu ü'
+    - 'xform yu[-;] ǖ'
+    - 'xform yu/ ǘ'
+    - 'xform yu[<,] ǚ'
+    - 'xform yu\\ ǜ'
+    - 'xform yu ü'
+    - 'xform (hs)u[-;] $1ǖ'
+    - 'xform (hs)u/ $1ǘ'
+    - 'xform (hs)u[<,] $1ǚ'
+    - 'xform (hs)u\\ $1ǜ'
+    - 'xform (hs)u $1ü'
+    - 'xform j([y]?)u([a-z]+)?[-;] jǖ$2'
+    - 'xform j([y]?)u([a-z]+)?/ jǘ$2'
+    - 'xform j([y]?)u([a-z]+)?[<,] jǚ$2'
+    - 'xform j([y]?)u([a-z]+)?\\ jǜ$2'
+    - 'xform j([y]?)u jü'
+    - 'xform u[-;] ū'
+    - 'xform u[<,] û'
+    - 'xform u/ ú'
+    - 'xform u\\ ù'
+    - 'xform ü[-;] ǖ'
+    - 'xform ü/ ǘ'
+    - 'xform ü[<,] ǚ'
+    - 'xform ü\\ ǜ'
+    - 'xform w[-;] ẅ'
+    - 'xform w[<,] ŵ'
+    - 'xform w/ ẃ'
+    - 'xform w\\ ẁ'
+  comment_format: &COMMENT_FORMAT
+    - xform ([aeiou])(l|ng?)([1234]) $1$3$2
+    - xform ([aeo])([iu])([1234]) $1$3$2
+    - xform a1 ā
+    - xform a2 á
+    - xform a3 â
+    - xform a4 à
+    - xform e1 ē
+    - xform e2 é
+    - xform e3 ê
+    - xform e4 è
+    - xform eh1 ēh
+    - xform eh2 éh
+    - xform eh3 êh
+    - xform eh4 èh
+    - xform o1 ō
+    - xform o2 ó
+    - xform o3 ô
+    - xform o4 ò
+    - xform i1 ī
+    - xform i2 í
+    - xform i3 î
+    - xform i4 ì
+    - xform ih1 īh
+    - xform ih2 íh
+    - xform ih3 îh
+    - xform ih4 ìh
+#    - xform iu1 ǖ
+#    - xform iu2 ǘ
+#    - xform iu3 ǚ
+#    - xform iu4 ǜ
+#    - xform iu ü
+    - xform yu1 ǖ
+    - xform yu2 ǘ
+    - xform yu3 ǚ
+    - xform yu4 ǜ
+    - xform yu ü
+    - xform ([dt])?ju([a-z]+)?1 $1jǖ$2
+    - xform ([dt])?ju([a-z]+)?2 $1jǘ$2
+    - xform ([dt])?ju([a-z]+)?3 $1jǚ$2
+    - xform ([dt])?ju([a-z]+)?4 $1jǜ$2
+    - xform ([a-z]?[^i])u([a-z]+)?1 $1ū$2
+    - xform ([a-z]?[^i])u([a-z]+)?2 $1ú$2
+    - xform ([a-z]?[^i])u([a-z]+)?3 $1û$2
+    - xform ([a-z]?[^i])u([a-z]+)?4 $1ù$2
+    - xform w1 ẅ
+    - xform w2 ẃ
+    - xform w3 ŵ
+    - xform w4 ẁ
+  initial_quality: 0.7
+
+reverse_lookup:
+  dictionary: cangjie5
+  enable_completion: true
+  prefix: "`"
+  suffix: "'"
+  tips: 〔倉頡〕
+  preedit_format:
+    - "xlit|abcdefghijklmnopqrstuvwxyz|日月金木水火土竹戈十大中一弓人心手口尸廿山女田難卜符|"
+  comment_format: *COMMENT_FORMAT
+  initial_quality: 0.3
+
+cangjie5_reverse_lookup:
+  tags: [ reverse_lookup ]
+  dictionary: cangjie5
+  overwrite_comment: true
+  comment_format:
+    - "xlit|abcdefghijklmnopqrstuvwxyz~|日月金木水火土竹戈十大中一弓人心手口尸廿山女田難卜符～|"
+
+abc_segmentor:
+  extra_tags:
+    - reverse_lookup
+
+punctuator:
+  import_preset: symbols_yc
+
+key_binder:
+  import_preset: default
+
+recognizer:
+  import_preset: default
+  patterns:
+    reverse_lookup: "`[a-z]*'?$"
+    punct: "^/[0-9]?[a-z]*$"

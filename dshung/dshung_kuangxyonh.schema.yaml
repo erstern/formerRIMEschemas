@@ -1,0 +1,461 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: dshung_kuangxyonh
+  name: 柳絮拼音廣韻註解
+  version: "2014.11.30"
+  author:
+    - 謝元辰 <yuanchen.gm@gmail.com>
+  description: |
+    鄭州地區中原官話，樹式拼音拼寫法，廣韻註解。
+    使用 LEOYoon-Tsaw/Cangjie6 中 My_cangjie6 方案的中古音 comment_format 方案。
+    倉頡五代編碼反查，亦作爲擴展詞庫，音形混合輸入。
+    支持漢語拼音方案，以大寫字母 P 引導輸入。
+  dependencies:
+    - dshung
+    - cangjie5
+    - zyenpheng
+    - luna_pinyin
+
+switches:
+  - name: ascii_mode
+    reset: 0
+  - name: full_shape
+    reset: 0
+  - name: simplification
+    reset: 0
+    states: [ 漢字, 汉字 ]
+  - name: extended_charset
+    states: [ 通用, 增廣 ]
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - affix_segmentor@luna_pinyin
+    - affix_segmentor@cangjie5_lookup
+    - affix_segmentor@pinyin_lookup
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - script_translator
+    - table_translator@cangjie5_lookup
+    - script_translator@luna_pinyin
+    - script_translator@pinyin_lookup
+#    - reverse_lookup_translator
+  filters:
+    - simplifier@zh_simp
+    - uniquifier
+    - reverse_lookup_filter@cangjie5_lookup
+#    - reverse_lookup_filter@translator
+    - reverse_lookup_filter@kuangxyonh
+
+zh_simp:
+  option_name: simplification
+#  tags: [ abc, cangjie5, luna_pinyin ]
+  tips: all
+
+speller:
+  alphabet: 'zyxwvutsrqponmlkjihgfedcba:;<,/\'
+  initials: zyxwvutsrqponmlkjihgfedcba
+  delimiter: " '"
+  algebra:
+    - derive/^wu(.+)$/we$1/
+#    - derive/^w/v/
+    - abbrev/^([a-z]).+$/$1/
+    - abbrev/^([zcs]h).+$/$1/
+    - abbrev/^([dth]s).+$/$1/
+    - abbrev/^(dsh).+$/$1/
+    - abbrev/^([t]?ch).+$/$1/
+    - derive/^rh/r/
+    - derive/^dj/j/
+    - derive/^tch/ch/
+#    - derive/^([jqx])([aeou])/$1i$2/
+    - derive/^([dt]?j)([aeou]h?)/$1i$2/
+    - derive/^([dt]?j)i([aeou]h?)/$1$2/
+    - derive/^([dt]?j)y(u)/$1$2/
+    - derive/^(hs)([aeou]h?)/$1i$2/
+    - derive/^(hs)i([aeou]h?)/$1$2/
+    - derive/^(hs)y(u)/$1$2/
+    - derive/^(ds)(h?)/z$2/
+    - derive/^ts/c/
+    - derive/^tj/q/
+    - derive/^hs/x/
+#    - derive/^yu/iu/
+    - derive/ui/uei/
+    - derive/un/uen/
+#    - derive/eo(\d?)$/oe$1/
+    - derive/([aeiou])ng(\d?)$/$1gn$2/
+    - derive/([iu])a(l|ng?)(\d?)$/a$1$2$3/
+    - derive/^ds(h?)([a-z]+)(\d?)$/sd$1$2$3/
+    - derive/^([a-z]+)\d$/$1/
+    - 'xlit 1234 -/<\'
+    - 'derive/^(.*)-$/$1;/'
+    - 'derive/^(.*)<$/$1,/'
+
+translator:
+  dictionary: dshung
+  #spelling_hints: 4
+  overwrite_comment: true
+  preedit_format:
+    - 'xform ([aeiou])(l|ng?)([-;<,/\\]) $1$3$2'
+    - 'xform ([aeo])([iu])([-;<,/\\]) $1$3$2'
+    - 'xform a[-;] ā'
+    - 'xform a[<,] â'
+    - 'xform a/ á'
+    - 'xform a\\ à'
+    - 'xform e[-;] ē'
+    - 'xform e[<,] ê'
+    - 'xform e/ é'
+    - 'xform e\\ è'
+    - 'xform eh[-;] ēh'
+    - 'xform eh[<,] êh'
+    - 'xform eh/ éh'
+    - 'xform eh\\ èh'
+    - 'xform o[-;] ō'
+    - 'xform o[<,] ô'
+    - 'xform o/ ó'
+    - 'xform o\\ ò'
+    - 'xform i[-;] ī'
+    - 'xform i[<,] î'
+    - 'xform i/ í'
+    - 'xform i\\ ì'
+    - 'xform ih[-;] īh'
+    - 'xform ih[<,] îh'
+    - 'xform ih/ íh'
+    - 'xform ih\\ ìh'
+    - 'xform r([^h])([a-z]+)? rh$1$2'
+    - 'xform ([^dt])j $1dj'
+    - 'xform ^j dj'
+    - 'xform z ds'
+    - 'xform ([^t])ch $1tch'
+    - 'xform ^ch tch'
+    - 'xform c([^h])([a-z]+)? ts$1$2'
+    - 'xform q tj'
+    - 'xform x hs'
+#    - 'xform iu[-;] ǖ'
+#    - 'xform iu/ ǘ'
+#    - 'xform iu[<,] ǚ'
+#    - 'xform iu\\ ǜ'
+#    - 'xform iu ü'
+    - 'xform yu[-;] ǖ'
+    - 'xform yu/ ǘ'
+    - 'xform yu[<,] ǚ'
+    - 'xform yu\\ ǜ'
+    - 'xform yu ü'
+    - 'xform (hs)u[-;] $1ǖ'
+    - 'xform (hs)u/ $1ǘ'
+    - 'xform (hs)u[<,] $1ǚ'
+    - 'xform (hs)u\\ $1ǜ'
+    - 'xform (hs)u $1ü'
+    - 'xform j([y]?)u([a-z]+)?[-;] jǖ$2'
+    - 'xform j([y]?)u([a-z]+)?/ jǘ$2'
+    - 'xform j([y]?)u([a-z]+)?[<,] jǚ$2'
+    - 'xform j([y]?)u([a-z]+)?\\ jǜ$2'
+    - 'xform j([y]?)u jü'
+    - 'xform u[-;] ū'
+    - 'xform u[<,] û'
+    - 'xform u/ ú'
+    - 'xform u\\ ù'
+    - 'xform ü[-;] ǖ'
+    - 'xform ü/ ǘ'
+    - 'xform ü[<,] ǚ'
+    - 'xform ü\\ ǜ'
+    - 'xform w[-;] ẅ'
+    - 'xform w[<,] ŵ'
+    - 'xform w/ ẃ'
+    - 'xform w\\ ẁ'
+  comment_format: &COMMENT_FORMAT
+    - xform ([aeiou])(l|ng?)([1234]) $1$3$2
+    - xform ([aeo])([iu])([1234]) $1$3$2
+    - xform a1 ā
+    - xform a2 á
+    - xform a3 â
+    - xform a4 à
+    - xform e1 ē
+    - xform e2 é
+    - xform e3 ê
+    - xform e4 è
+    - xform eh1 ēh
+    - xform eh2 éh
+    - xform eh3 êh
+    - xform eh4 èh
+    - xform o1 ō
+    - xform o2 ó
+    - xform o3 ô
+    - xform o4 ò
+    - xform i1 ī
+    - xform i2 í
+    - xform i3 î
+    - xform i4 ì
+    - xform ih1 īh
+    - xform ih2 íh
+    - xform ih3 îh
+    - xform ih4 ìh
+#    - xform iu1 ǖ
+#    - xform iu2 ǘ
+#    - xform iu3 ǚ
+#    - xform iu4 ǜ
+#    - xform iu ü
+    - xform yu1 ǖ
+    - xform yu2 ǘ
+    - xform yu3 ǚ
+    - xform yu4 ǜ
+    - xform yu ü
+    - xform ([dt])?ju([a-z]+)?1 $1jǖ$2
+    - xform ([dt])?ju([a-z]+)?2 $1jǘ$2
+    - xform ([dt])?ju([a-z]+)?3 $1jǚ$2
+    - xform ([dt])?ju([a-z]+)?4 $1jǜ$2
+    - xform ([a-z]?[^i])u([a-z]+)?1 $1ū$2
+    - xform ([a-z]?[^i])u([a-z]+)?2 $1ú$2
+    - xform ([a-z]?[^i])u([a-z]+)?3 $1û$2
+    - xform ([a-z]?[^i])u([a-z]+)?4 $1ù$2
+    - xform w1 ẅ
+    - xform w2 ẃ
+    - xform w3 ŵ
+    - xform w4 ẁ
+  initial_quality: 0.7
+
+luna_pinyin:
+  tag: luna_pinyin
+  dictionary: luna_pinyin
+#  enable_charset_filter: true
+  prefix: P
+  suffix: ;
+  preedit_format:
+    - xform/([nl])v/$1ü/
+    - xform/([nl])ue/$1üe/
+    - xform/([jqxy])v/$1u/
+  tips: 【漢拼】
+  closing_tips: 【樹】
+#  initial_quality: 0.2
+
+cangjie5_lookup:
+  dictionary: cangjie5
+  tag: cangjie5_lookup
+  overwrite_format: true
+  prefix: "`"
+  suffix: "'"
+  preedit_format:
+    - "xform/^([a-z]*)$/$1｜\\U$1\\E/"
+    - "xlit|ABCDEFGHIJKLMNOPQRSTUVWXYZ|日月金木水火土竹戈十大中一弓人心手口尸廿山女田難卜符|"
+  comment_format:
+    - "xlit|abcdefghijklmnopqrstuvwxyz~|日月金木水火土竹戈十大中一弓人心手口尸廿山女田難卜符～|"
+  tips: 【倉頡】
+  closing_tips: 【樹】
+  initial_quality: 0.5
+
+pinyin_lookup:
+  tag: pinyin_lookup
+  prefix: "`P"
+  suffix: ";"
+  dictionary: luna_pinyin
+  preedit_format:
+    - xform/([nl])v/$1ü/
+    - xform/([nl])ue/$1üe/
+    - xform/([jqxy])v/$1u/
+  tips: 【漢拼反查】
+  closing_tips: 【樹】
+#  initial_quality: 0.25
+  
+kuangxyonh:
+  tags: [ abc ]
+  dictionary: zyenpheng
+  overwrite_comment: true
+  comment_format:
+    - xform/ /\x03 \x01/
+    - xform/$/\x03/
+    - xform/^/\x01/
+
+    - xform/ng/ŋ/
+    - xform/k\x03/ŋq\x03/
+    - xform/t\x03/nq\x03/
+    - xform/p\x03/mq\x03/
+    - xform/(\x01(?:th?|ch?|zs?|[dns]))r(?=[^iy'])/$1r'r/
+    - xform/(\x01(?:ph?|kh?|gh?|[bmhqjiy]|ŋ)[iy])eŋ/$1æŋ/
+    - xform/j(?![iy'])/ji/
+    - xform/(\x01(?:ch?|zs?|[sn])?[jl])(?=([iy]e([umn]|ŋ)?|i[imn]|yn)[dxhq]?)/$1'j/
+    - xform/(\x01(?:ch?|zs?|s))(?=(?:[iy]e(?:[umn]|ŋ)?|i[imn]|yn)[dxhq]?)/$1'j/
+    - xform/(\x01(?:ch?|zs?|s)rj?i)n/$1ɿn/
+    - xform/(\x01)(?!ph?|kh?|gh?|ŋ|[bmhqjiy])([^aeiouy]*y)n([xhq]?\x03)/$1$2ɿn$3/
+    - xform/(\x01)([^aeiouy]*jy)n([xhq]?\x03)/$1$2ɿn$3/
+    - xform/(\x01)(?!kh?|g|ŋ)([^aeioux]*)ia([xhq]?\x03)/$1$2'ria$3/
+
+    - xform/([^xhdq])\x03/$1w\x03/
+    - xform/(\x01[^\x01\x03]+)([whxq])\x03((?:\s\x01[^\x01\x03]+\x03)*)\s\1([whxq])\x03((?:\s\x01[^\x01\x03]+\x03)*)\s\1([whxq]\x03)/$1$2$4$6$3$5/
+    - xform/(\x01[^\x01\x03]+)([whxq])\x03((?:\s\x01[^\x01\x03]+\x03)*)\s\1([whxq]\x03)/$1$2$4$3/
+
+#    - xform/\x01ph(?=y(o[in]?|a[mnd]|[au]ŋ)|iu(ŋ)?)/\x01L敷\x02/
+#    - xform/\x01p(?=y(o[in]?|a[mnd]|[au]ŋ)|iu(ŋ)?)/\x01L非\x02/
+#    - xform/\x01b(?=y(o[in]?|a[mnd]|[au]ŋ)|iu(ŋ)?)/\x01L奉\x02/
+#    - xform/\x01m(?=y(o[in]?|a[mnd]|[au]ŋ))/\x01L微\x02/
+    - xform/\x01ph/\x01L滂\x02/
+    - xform/\x01p/\x01L幫\x02/
+    - xform/\x01b/\x01L並\x02/
+    - xform/\x01m/\x01L明\x02/
+    - xform/\x01thr/\x01徹\x02/
+    - xform/\x01tr/\x01知\x02/
+    - xform/\x01dr/\x01澄\x02/
+    - xform/\x01nr/\x01孃\x02/
+    - xform/\x01nj/\x01日\x02/
+    - xform/\x01th/\x01透\x02/
+    - xform/\x01t/\x01端\x02/
+    - xform/\x01d/\x01定\x02/
+    - xform/\x01n/\x01泥\x02/
+    - xform/\x01chr/\x01初\x02/
+    - xform/\x01cr/\x01莊\x02/
+    - xform/\x01zsr/\x01俟\x02/
+    - xform/\x01zr/\x01崇\x02/
+    - xform/\x01sr/\x01生\x02/
+    - xform/\x01chj/\x01昌\x02/
+    - xform/\x01cj/\x01章\x02/
+    - xform/\x01zsj/\x01船\x02/
+    - xform/\x01zj/\x01常\x02/
+    - xform/\x01sj/\x01書\x02/
+    - xform/\x01ch/\x01清\x02/
+    - xform/\x01c/\x01精\x02/
+    - xform/\x01zs/\x01邪\x02/
+    - xform/\x01z/\x01從\x02/
+    - xform/\x01s/\x01心\x02/
+    - xform/\x01kh/\x01谿\x02/
+    - xform/\x01k/\x01見\x02/
+    - xform/\x01gh/\x01匣\x02/
+    - xform/\x01g/\x01羣\x02/
+    - xform/\x01ŋ/\x01疑\x02/
+    - xform/\x01h/\x01曉\x02/
+    - xform/\x01q/\x01影\x02/
+    - xform/\x01([iy])/\x01云\x02$1/
+    - xform/\x01j/\x01以\x02/
+    - xform/\x01l/\x01來\x02/
+    - xform/'//
+
+    - xform/\x01(L?)([^\x00-\x7f]{3})\x02([^\x01\x02\x03wxhq]+)([wxhq]*)\x03\s((?:\x01[^\x01\x03]+\x03\s)*)\x01\1([^\x00-\x7f]{3})\x02\3([wxhq]*)\x03\s((?:\x01[^\x01\x03]+\x03\s)*)\x01\1([^\x00-\x7f]{3})\x02\3([wxhq]*\x03)/\x01$1$2／$6／$9\x02$3$4／$7／$10 $5$8/
+    - xform/\x01(L?)([^\x00-\x7f]{3})\x02([^\x01\x02\x03wxhq]+)([wxhq]*)\x03\s((?:\x01[^\x01\x03]+\x03\s)*)\x01\1([^\x00-\x7f]{3})\x02\3([wxhq]*\x03)\s?/\x01$1$2／$6\x02$3$4／$7 $5/
+    - xform/\x01(L?)([^\x00-\x7f]{3})\x02([^\x01\x02\x03wxhq]+)([wxhq]*)\x03\s((?:\x01[^\x01\x03]+\x03\s)*)\x01\1([^\x00-\x7f]{3})\x02\3([wxhq]*\x03)\s?/\x01$1$2／$6\x02$3$4／$7 $5/
+    - xform/／\x03/\x03/
+    - xform/([xhq]+)w/w$1/
+    - xform/(w?)([hq]+)x/$1x$2/
+    - xform/q(h)/$1q/
+    - xform/\x02([^\x01\x02\x03wxhq]+?)([wxhq]+)／\2／\2\x03/\x02$1$2\x03/
+    - xform/\x02([^\x01\x02\x03wxhq]+?)([wxhq]+)／\2\x03/\x02$1$2\x03/
+
+    - xform/\x02(i?)uŋ((?:[wxhq]|／)*\x03)/\x02$1東$2/
+    - xform/\x02(y)uŋ((?:[wxhq]|／)*\x03)/\x02$1鐘$2/
+    - xform/\x02(u)uŋ((?:[wxhq]|／)*\x03)/\x02$1冬$2/
+    - xform/\x02(r)uŋ((?:[wxhq]|／)*\x03)/\x02$1江$2/
+    - xform/\x02([iy])aŋ((?:[wxhq]|／)*\x03)/\x02$1o陽$2/
+    - xform/\x02(u?)aŋ((?:[wxhq]|／)*\x03)/\x02$1o唐$2/
+    - xform/\x02(ru?)aŋ((?:[wxhq]|／)*\x03)/\x02$1o庚$2/
+    - xform/\x02([iy])æŋ((?:[wxhq]|／)*\x03)/\x02ɨ$1o庚$2/
+    - xform/\x02(ru?)eŋ((?:[wxhq]|／)*\x03)/\x02$1o耕$2/
+    - xform/\x02j?([iy])eŋ((?:[wxhq]|／)*\x03)/\x02jɨ$1o清$2/
+    - xform/\x02(u?e)ŋ((?:[wxhq]|／)*\x03)/\x02$1o青$2/
+    - xform/\x02([iy])ŋ((?:[wxhq]|／)*\x03)/\x02$1o蒸$2/
+    - xform/\x02(u?)oŋ((?:[wxhq]|／)*\x03)/\x02$1o登$2/
+
+    - xform/\x02(j?)(y)ɿn((?:[wxhq]|／)*\x03)/\x02$1ɨ$2o諄$3/
+    - xform/\x02(j?)(i)ɿn((?:[wxhq]|／)*\x03)/\x02$1ɨ$2o臻$3/
+    - xform/\x02(j?)([iy])n((?:[wxhq]|／)*\x03)/\x02$1ɨ$2o眞$3/
+    - xform/\x02(i)on((?:[wxhq]|／)*\x03)/\x02$1o欣$2/
+    - xform/\x02(u)on((?:[wxhq]|／)*\x03)/\x02$1o魂$2/
+    - xform/\x02on((?:[wxhq]|／)*\x03)/\x02o痕$1/
+    - xform/\x02(y)on((?:[wxhq]|／)*\x03)/\x02$1o文$2/
+    - xform/\x02(u)an((?:[wxhq]|／)*\x03)/\x02$1o桓$2/
+    - xform/\x02([iy])an((?:[wxhq]|／)*\x03)/\x02$1o元$2/
+    - xform/\x02(ru?)an((?:[wxhq]|／)*\x03)/\x02$1o刪$2/
+    - xform/\x02an((?:[wxhq]|／)*\x03)/\x02o寒$1/
+    - xform/\x02(ru?)en((?:[wxhq]|／)*\x03)/\x02$1o山$2/
+    - xform/\x02(j?)([iy])en((?:[wxhq]|／)*\x03)/\x02$1ɨ$2o仙$3/
+    - xform/\x02(u?e)n((?:[wxhq]|／)*\x03)/\x02$1o先$2/
+
+    - xform/\x02(j?)(i)m((?:[wxhq]|／)*\x03)/\x02$1ɨ$2o侵$3/
+    - xform/\x02(i)am((?:[wxhq]|／)*\x03)/\x02$1o嚴$2/
+    - xform/\x02(y)am((?:[wxhq]|／)*\x03)/\x02$1o凡$2/
+    - xform/\x02(r)am((?:[wxhq]|／)*\x03)/\x02$1o銜$2/
+    - xform/\x02(r)em((?:[wxhq]|／)*\x03)/\x02$1o咸$2/
+    - xform/\x02am((?:[wxhq]|／)*\x03)/\x02o談$1/
+    - xform/\x02(j?)(i)em((?:[wxhq]|／)*\x03)/\x02$1ɨ$2o鹽$3/
+    - xform/\x02(e)m((?:[wxhq]|／)*\x03)/\x02$1o添$2/
+    - xform/\x02om((?:[wxhq]|／)*\x03)/\x02o覃$1/
+
+    - xform/\x02(r)au((?:[wxh]|／)*\x03)/\x02$1肴$2/
+    - xform/\x02au((?:[wxh]|／)*\x03)/\x02豪$1/
+    - xform/\x02(j?)(i)eu((?:[wxh]|／)*\x03)/\x02$1ɨ$2宵$3/
+    - xform/\x02(e)u((?:[wxh]|／)*\x03)/\x02$1蕭$2/
+    - xform/\x02(i)u((?:[wxh]|／)*\x03)/\x02$1尤$2/
+    - xform/\x02u((?:[wxh]|／)*\x03)/\x02侯$1/
+    - xform/\x02(y)((?:[wxh]|／)*\x03)/\x02$1幽$2/
+
+    - xform/\x02(j?)([iy])e((?:[wxh]|／)*\x03)/\x02$1ɨ$2o支$3/
+    - xform/\x02(j?)([iy])i((?:[wxh]|／)*\x03)/\x02$1ɨ$2o脂$3/
+    - xform/\x02i((?:[wxh]|／)*\x03)/\x02io之$1/
+    - xform/\x02([iy])oi((?:[wxh]|／)*\x03)/\x02$1o微$2/
+    - xform/\x02([iy])a((?:d|／)+\x03)/\x02$1o廢$2/
+    - xform/\x02(ru?)a((?:d|／)+\x03)/\x02$1o夬$2/
+    - xform/\x02(u?)a((?:d|／)+\x03)/\x02$1o泰$2/
+    - xform/\x02(j?)([iy])e((?:d|／)+\x03)/\x02$1ɨ$2o祭$3/
+    - xform/\x02(ru?)e((?:[wxh]|／)*\x03)/\x02$1o佳$2/
+    - xform/\x02(ru?)ai((?:[wxh]|／)*\x03)/\x02$1o皆$2/
+    - xform/\x02(u?e)((?:[wxh]|／)*\x03)/\x02$1o齊$2/
+    - xform/\x02i?(u)ai((?:[wxh]|／)*\x03)/\x02$1o灰$2/
+    - xform/\x02ai((?:[wxh]|／)*\x03)/\x02o咍$1/
+
+    - xform/\x02([uiy])a((?:[wxh]|／)*\x03)/\x02$1o戈$2/
+    - xform/\x02a((?:[wxh]|／)*\x03)/\x02o歌$1/
+    - xform/\x02j?(r[ui]?)a((?:[wxh]|／)*\x03)/\x02$1o麻$2/
+    - xform/\x02(i)o((?:[wxh]|／)*\x03)/\x02$1魚$2/
+    - xform/\x02(y)o((?:[wxh]|／)*\x03)/\x02$1虞$2/
+    - xform/\x02o((?:[wxh]|／)*\x03)/\x02模$1/
+
+    - xform/d/h/
+    - xform/(\x01[^\x01\x03wxhq]+)([whxq]+)((?:／[whxq]+)*)\x03/$1】$2$3/
+
+    - xform/\x01(L?)((?:[^\x00-\x7f]{3}|／)+)\x02(j?ɨ)([iy])(o?)([^\x00-\x7f]{3})/〖$2〗重紐$3等\x01$1$5$4\x03【$6/
+    - xform/\x01(L?)((?:[^\x00-\x7f]{3}|／)+)\x02(u?)e(o?)([^\x00-\x7f]{3})/〖$2〗四等\x01$1$4$3\x03【$5/
+    - xform/\x01(L?)((?:[^\x00-\x7f]{3}|／)+)\x02r(u?)(o?)([^\x00-\x7f]{3})/〖$2〗二等\x01$1$4$3\x03【$5/
+    - xform/\x01(L?)((?:[^\x00-\x7f]{3}|／)+)\x02r?([iy])(o?)([^\x00-\x7f]{3})/〖$2〗三等\x01$1$4$3\x03【$5/
+    - xform/\x01(L?)((?:[^\x00-\x7f]{3}|／)+)\x02(u?)(o?)([^\x00-\x7f]{3})/〖$2〗一等\x01$1$4$3\x03【$5/
+    - xform/jɨ/四/
+    - xform/ɨ/三/
+    - xform/\x01(?!L)o[uy]\x03/合/
+    - xform/\x01(?!L)oi?\x03/開/
+    - xform/\x01L?[a-z]*\x03//
+
+    - xform/(\s|^)([^\s]+)【([^\x00-\x7f]{3})】([wxhq]+)\s((?:[^\s]+\s)*)\2【([^\x00-\x7f]{3})】([wxhq]+)(\s|$)/$1$2【$3／$6】$4／$7 $5$8/
+    - xform/(】)([wxhq]+)／\2(\s)/$1$2$3/
+
+    - xlit|wxhq|平上去入|
+
+abc_segmentor:
+  extra_tags:
+    - cangjie5_lookup
+
+punctuator:
+  import_preset: symbols_yc
+
+key_binder:
+  import_preset: default
+
+recognizer:
+  import_preset: default
+  patterns:
+    email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
+    url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
+#    reverse_lookup: "`[a-z]*;?$"
+    upper_case: ^([A-OQ-Z][a-zA-Z0-9]*|[PZ][A-Z0-9]*)$
+    cangjie5_lookup: "`[a-z]*;?$"
+    pinyin_lookup: "`P[a-z]*;?$"
+    luna_pinyin: (?<![`A-Z])P[a-z']*;?$
+    punct: "^/([a-z]+|[0-9])$"

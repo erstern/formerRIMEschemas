@@ -1,0 +1,5 @@
+** Used RIME schemas
+*** dshung
+*** wubi98
+*** zhlan
+*** easy_en
