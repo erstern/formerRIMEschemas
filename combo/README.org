@@ -1,0 +1,23 @@
+* 宫保拼音&郑码
+  - 並擊輸入拼音，適用「鍵盤控」佈局。
+  - 佈局：
+    |   |   | Ln | Dt |    |    | u  | I | O  |   |
+    |   | S | Cr | Z* | Gk |    | i* | N | E  |   |
+    |   |   | Fm | Bp |    | er | yu | U | E' |   |
+    |   |   |    |    | H* | A* |    |   |    |   |
+    標「*」的按鍵爲拇指、食指的基準鍵位
+    E' 是 E 的活用鍵位，只用於組合韻母
+
+    - 組合聲母
+      BH = p, BF = m, DH = t, DL = n, GH = k,
+      ZH = zh, CH = ch, SH = sh, ZC = r
+
+    - 組合韻母及活用（同「大衆式」），括弧內爲活用組合
+      AI = ai, EI (OI) = ei, AU = ao, U (E'U) = ou,
+      uI = uei, uAI = uai, iU (yuU) = iou, iAU (yuAU) = iao,
+      N = en, NE = eng, AN = an, ANE = ang,
+      iN = in, uN = uen, yuN = yun,
+      iNE = ing, uNE (uIO) = ong, yuNE (yuUE') = iong,
+      uANE (uAIO) = uang
+
+  - 同時可用 ` 引導，以「郑码」方案輸入。
