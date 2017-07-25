@@ -1,14 +1,23 @@
-** Used RIME schemas
-*** cangjie
+* Used RIME schemas
+** array30
+- 行列 30。
+** cangjie
 - 倉頡五代、蒼頡檢字法，配合芝蘭拼音、柳絮拼音反查。
-*** double
+** combo
+- 宫保拼音，郑码反查。
+** double
 - 自然碼雙拼，倉頡五代反查。
-*** dshung
+** dshung
 - 柳絮拼音，遷移至此。
-*** wubi98
-- 王碼五筆 86 版，流霰專用。
-*** zhlan
+** easy_en
+- 英文输入。
+** triungkox
+- 中古三拼。
+** wubi98
+- 王碼五筆 98 版。
+** zhengma
+- 郑码。
+** zhlan
 - 芝蘭生於階庭，只求精简的方案。
-*** zhung_transcript
+** zhung_transcript
 - 基於中州註音法的方案。
-*** easy_en
